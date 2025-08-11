@@ -22,6 +22,10 @@ flags.DEFINE_string('type_file', 'data/annotations/classes.txt',
 flags.DEFINE_string('save_path', 'data/annotations',
                     'Directory to save the .json output.')
 
+try:
+    default_timer = time.perf_counter
+except AttributeError:
+    default_timer = time.clock 
 
 class Annotator:
     def __init__(self, video_file, type_file, save_path):
@@ -98,7 +102,7 @@ class Annotator:
         self.dynamic_label_titles = {}
         self.dynamic_label_buts = {}
         self.start_crop = 0
-        self.start_time = time.clock()
+        self.start_time = default_timer()
         self.zoom = 120  # the larger the more zoomed in the timeline
         self.speed = 5
 
@@ -1072,13 +1076,13 @@ class Annotator:
 
         # self.save()
         # print 'Starting update'
-        # start_inner = time.clock()
+        # start_inner = time.perf_counter()
         # latest = start_inner
         # try:
         self.update_image()
         # print 'Update Image'
-        # taken = time.clock()-latest
-        # latest = time.clock()
+        # taken = time.perf_counter()-latest
+        # latest = time.perf_counter()
         # print taken
         self.update_timeline()
         self.update_stats()
@@ -1129,8 +1133,8 @@ class Annotator:
 
         self.update_data_but.place(x=125, y=self.stats_label.winfo_height()-40, height=30, width=100)
 
-        if (time.clock()-self.start_time) > 60:
-            self.start_time = time.clock()
+        if (default_timer() - self.start_time) > 60:
+            self.start_time = default_timer()
             _, vid_id = os.path.split(self.in_file)
 
             with open(os.path.join(self.out_file, "autosaves", vid_id+'_A'+str(self.autosave)+'.json'), 'w') as f:
